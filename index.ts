@@ -66,6 +66,7 @@ app.post('/create', (req: Request<any, any, CreateResponseBody>, res) => {
       message: 'Missing required fields',
       status: 'error',
     });
+    return;
   }
 
   // todo: change this to postgress when its configured.

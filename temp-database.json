@@ -3,5 +3,10 @@
     "username": "Yab Locco",
     "email": "yablocco@gmail.com",
     "password": "$2b$10$p8Ru53Ofaz5WTFv00VMp4u2AlfAoyjFR4fMM0fmQA/tpBm/G5eABC"
+  },
+  {
+    "username": "test locco",
+    "email": "test@gmail.com",
+    "password": "$2b$10$eMtVtmIHZLK4wqhm2CDA1OKi724LX7UIQS94oRjxyxZd1Hkh/dDsG"
   }
 ]
