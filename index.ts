@@ -1,93 +1,33 @@
-import express, { Request } from 'express';
-import fs from 'fs';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import tempDatabase from './temp-database.json';
+import express from 'express';
+
+import { PrismaClient } from '@prisma/client';
+import loginRouter from './src/auth/controller/login';
+import createRouter from './src/auth/controller/create';
 
 const app = express();
 app.use(express.json());
+app.use(loginRouter);
+app.use(createRouter);
 
-export interface CreateResponseBody {
-  username: string;
-  email: string;
-  password: string;
-}
+const prisma = new PrismaClient();
 
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    res.status(400).send({
-      message: 'Missing required fields',
-      status: 'error',
-    });
-
-    return;
-  }
-
-  const foundUser = tempDatabase.find((user) => email === user.email);
-
-  if (!foundUser) {
-    res.status(404).send({
-      message: 'User not found',
-      status: 'error',
-    });
-
-    return;
-  }
-
-  const validPassword = await bcrypt.compare(password, foundUser.password);
-
-  if (!validPassword) {
-    res.status(404).send({
-      message: 'User not found',
-      status: 'error',
-    });
-
-    return;
-  }
-
-  // todo: generate a token that expires!
-  const token = jwt.sign({ email }, 'qualquer');
-
-  res.status(201).send({
-    message: '',
-    status: 'success',
+async function main() {
+  await prisma.user.create({
     data: {
-      token: `Bearer ${token}`,
+      name: 'Alice',
+      email: 'alice@prisma.io',
+      password: '123321',
     },
   });
-});
 
-app.post('/create', (req: Request<any, any, CreateResponseBody>, res) => {
-  // todo: create validations
-  if (!req.body.email || !req.body.password || !req.body.username) {
-    res.status(400).send({
-      message: 'Missing required fields',
-      status: 'error',
-    });
-    return;
-  }
+  const allUsers = await prisma.user.findMany({
 
-  // todo: change this to postgress when its configured.
-  const tempDB: CreateResponseBody[] = [...tempDatabase];
-
-  bcrypt.hash(req.body.password, 10, (err, hash) => {
-    if (!err) {
-      tempDB.push({
-        ...req.body,
-        password: hash,
-      });
-
-      fs.writeFileSync('temp-database.json', JSON.stringify(tempDB));
-    }
   });
 
-  res.status(200).json({
-    message: 'ok',
-    status: 'success',
-  });
-});
+  console.dir(allUsers, { depth: null });
+}
+
+main();
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

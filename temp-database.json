@@ -8,5 +8,15 @@
     "username": "test locco",
     "email": "test@gmail.com",
     "password": "$2b$10$eMtVtmIHZLK4wqhm2CDA1OKi724LX7UIQS94oRjxyxZd1Hkh/dDsG"
+  },
+  {
+    "username": "Xuxa",
+    "email": "meneguel",
+    "password": "$2b$10$8yVDKEs6tIMOizC.ttqIGelSxnqoIshxnPw7UeveqU.XPbZmLXUU."
+  },
+  {
+    "username": "Bicho",
+    "email": "Papao",
+    "password": "$2b$10$icq4jnxiUkuwHxR6d0Aa/.mnZ3ydjHCtjTh6rsvPeVFrMKK0uzAuu"
   }
 ]
