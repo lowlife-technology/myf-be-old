@@ -20,7 +20,7 @@ interface LoginResponse {
 
 }
 
-router.post('/login', async (req :Request<any, any, LoginResponseBody >, res: Response<LoginResponse>) => {
+router.post('/identity/login', async (req :Request<any, any, LoginResponseBody >, res: Response<LoginResponse>) => {
   const { email, password } = req.body;
 
   if (!email || !password) {

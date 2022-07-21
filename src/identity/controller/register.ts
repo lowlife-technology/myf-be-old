@@ -12,7 +12,7 @@ export interface CreateResponseBody {
 const router = express.Router();
 
 // todo: create a type interface for res
-router.post('/create', (req: Request<any, any, CreateResponseBody>, res) => {
+router.post('/identity/register', (req: Request<any, any, CreateResponseBody>, res) => {
   // todo: create validations
   if (!req.body.email || !req.body.password || !req.body.fullName) {
     res.status(400).send({

@@ -1,7 +1,7 @@
 import express from 'express';
 
-import loginRouter from './src/auth/controller/login';
-import createRouter from './src/auth/controller/create';
+import loginRouter from './src/identity/controller/login';
+import createRouter from './src/identity/controller/register';
 
 const app = express();
 app.use(express.json());
