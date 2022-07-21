@@ -1,12 +1,10 @@
-import express, { Request } from 'express';
-
-const router = express.Router();
+import { Request, Response } from 'express';
 
 interface DeleteCategoryRespose {
     id: number;
  }
 
-router.delete('/category/:id', (req: Request<any, any, DeleteCategoryRespose>, res) => {
+export default (req: Request<any, any, DeleteCategoryRespose>, res: Response) => {
   if (!req.body.id) {
     res.status(400).send({
       message: 'Missing required fields',
@@ -18,4 +16,4 @@ router.delete('/category/:id', (req: Request<any, any, DeleteCategoryRespose>, r
   // SOFT-DELETE
 
   res.status(200);
-});
+};
