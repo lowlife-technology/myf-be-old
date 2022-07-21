@@ -1,12 +1,10 @@
-import express, { Request } from 'express';
-
-const router = express.Router();
+import { Request, Response } from 'express';
 
 interface ListCategoryParams {
   type: 'INCOME' | 'EXPENSE'
 }
 
-router.get('/:id', (req: Request<ListCategoryParams>, res) => {
+export default () => (req: Request<ListCategoryParams>, res: Response) => {
   const { type } = req.params;
 
   if (!type) {
@@ -23,4 +21,4 @@ router.get('/:id', (req: Request<ListCategoryParams>, res) => {
       data: 'todo: category object data',
     });
   }
-});
+};

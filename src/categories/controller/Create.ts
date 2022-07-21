@@ -1,6 +1,4 @@
-import express, { Request } from 'express';
-
-const router = express.Router();
+import { Request, Response } from 'express';
 
 interface CreateCategoryResposeBody{
   categoryName: string;
@@ -11,7 +9,7 @@ interface CreateCategoryResposeBody{
   type: 'INCOME' | 'EXPENSE';
 }
 
-router.post('/category', (req: Request<any, any, CreateCategoryResposeBody>, res) => {
+export default (req: Request<any, any, CreateCategoryResposeBody>, res: Response) => {
   const {
     categoryName, currentDate, avaregeAmount, fixedAmount, description, type,
   } = req.body;
@@ -39,4 +37,4 @@ router.post('/category', (req: Request<any, any, CreateCategoryResposeBody>, res
   // create an id or let prisma do it
 
   res.status(201);
-});
+};

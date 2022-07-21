@@ -1,6 +1,4 @@
-import express, { Request } from 'express';
-
-const router = express.Router();
+import { Request, Response } from 'express';
 
 interface UpdateCategoryParams {
   id: number;
@@ -15,16 +13,13 @@ interface UpdateCategoryBody {
   type: 'INCOME' | 'EXPENSE';
 }
 
-router.put('/category/:id', (req: Request<UpdateCategoryParams, any, UpdateCategoryBody>, res) => {
+type UpdateCategoryRequest = Request<UpdateCategoryParams, any, UpdateCategoryBody>;
+
+export default () => (req: UpdateCategoryRequest, res: Response) => {
   const {
     params: { id },
     body: {
-      categoryName,
-      currentDate,
-      avaregeAmount,
-      fixedAmount,
-      description,
-      type,
+      categoryName, currentDate, avaregeAmount, fixedAmount, description, type,
     },
   } = req;
 
@@ -48,4 +43,4 @@ router.put('/category/:id', (req: Request<UpdateCategoryParams, any, UpdateCateg
   // todo: update category by id from database.
 
   res.status(200);
-});
+};

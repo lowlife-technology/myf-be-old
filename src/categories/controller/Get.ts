@@ -1,12 +1,10 @@
-import express, { Request } from 'express';
-
-const router = express.Router();
+import { Request, Response } from 'express';
 
 interface getCategoryByIdParams {
   id: number;
 }
 
-router.get('/:id', (req: Request<getCategoryByIdParams>, res) => {
+export default (req: Request<getCategoryByIdParams>, res: Response) => {
   const { id } = req.params;
 
   if (!id) {
@@ -24,6 +22,5 @@ router.get('/:id', (req: Request<getCategoryByIdParams>, res) => {
     message: '',
     status: 'success',
     data: 'todo: category object data',
-
   });
-});
+};
