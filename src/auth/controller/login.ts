@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import tempDatabase from '../../../temp-database.json';
+import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 interface LoginResponseBody {
   email: string;
@@ -31,38 +32,33 @@ router.post('/login', async (req :Request<any, any, LoginResponseBody >, res: Re
     return;
   }
 
-  const foundUser = tempDatabase.find((user) => email === user.email);
+  try {
+    const foundUser = await prisma.identity.findUnique({
+      where: { email },
+    });
 
-  if (!foundUser) {
+    if (foundUser) {
+      const validPassword = await bcrypt.compare(password, foundUser.password);
+
+      if (validPassword) {
+        // todo: generate a token that expires!
+        const token = jwt.sign({ email }, 'qualquer');
+
+        res.status(201).send({
+          message: '',
+          status: 'success',
+          data: {
+            token: `Bearer ${token}`,
+          },
+        });
+      }
+    }
+  } catch (error) {
     res.status(404).send({
       message: 'User not found',
       status: 'error',
     });
-
-    return;
   }
-
-  const validPassword = await bcrypt.compare(password, foundUser.password);
-
-  if (!validPassword) {
-    res.status(404).send({
-      message: 'User not found',
-      status: 'error',
-    });
-
-    return;
-  }
-
-  // todo: generate a token that expires!
-  const token = jwt.sign({ email }, 'qualquer');
-
-  res.status(201).send({
-    message: '',
-    status: 'success',
-    data: {
-      token: `Bearer ${token}`,
-    },
-  });
 });
 
 export default router;

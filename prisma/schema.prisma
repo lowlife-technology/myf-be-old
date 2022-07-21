@@ -8,10 +8,10 @@ datasource db {
 }
 
 model Identity {
-  id       String  @id @default(uuid())
-  email    String  @unique
-  name     String?
-  password String  @unique
+  id       String @id @default(uuid())
+  email    String @unique
+  fullName String
+  password String @unique
 }
 
 model NewIncome {

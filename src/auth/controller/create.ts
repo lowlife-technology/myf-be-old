@@ -1,10 +1,10 @@
 import express, { Request } from 'express';
 import bcrypt from 'bcrypt';
-import fs from 'fs';
-import tempDatabase from '../../../temp-database.json';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 export interface CreateResponseBody {
-  username: string;
+  fullName: string;
   email: string;
   password: string;
 }
@@ -14,7 +14,7 @@ const router = express.Router();
 // todo: create a type interface for res
 router.post('/create', (req: Request<any, any, CreateResponseBody>, res) => {
   // todo: create validations
-  if (!req.body.email || !req.body.password || !req.body.username) {
+  if (!req.body.email || !req.body.password || !req.body.fullName) {
     res.status(400).send({
       message: 'Missing required fields',
       status: 'error',
@@ -23,16 +23,20 @@ router.post('/create', (req: Request<any, any, CreateResponseBody>, res) => {
   }
 
   // todo: change this to postgress when its configured.
-  const tempDB: CreateResponseBody[] = [...tempDatabase];
 
-  bcrypt.hash(req.body.password, 10, (err, hash) => {
-    if (!err) {
-      tempDB.push({
-        ...req.body,
-        password: hash,
+  bcrypt.hash(req.body.password, 10, async (err, hash) => {
+    try {
+      const response = await prisma.identity.create({
+        data: {
+          password: hash,
+          email: req.body.email,
+          fullName: req.body.fullName,
+        },
       });
 
-      fs.writeFileSync('temp-database.json', JSON.stringify(tempDB));
+      console.log(response);
+    } catch (error) {
+      console.log(error);
     }
   });
 
