@@ -3,8 +3,8 @@ import express, { Request } from 'express';
 const router = express.Router();
 
 interface CreateCategoryResposeBody{
-  categoryName: string;
-  currentDate?: Date;
+  name: string;
+  frequency?: Date;
   avaregeAmount?: number;
   fixedAmount?: number;
   description?: string;
@@ -13,10 +13,10 @@ interface CreateCategoryResposeBody{
 
 router.post('/category', (req: Request<any, any, CreateCategoryResposeBody>, res) => {
   const {
-    categoryName, currentDate, avaregeAmount, fixedAmount, description, type,
+    name, frequency, avaregeAmount, fixedAmount, description, type,
   } = req.body;
 
-  if (!categoryName || !type) {
+  if (!name || !type) {
     res.status(400).send({
       message: 'Missing required fields',
       status: 'error',

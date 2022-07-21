@@ -14,11 +14,14 @@ model Identity {
   password String @unique
 }
 
-model NewIncome {
-  id        String   @id @default(uuid())
-  Category  String
-  CreatedAt DateTime @default(now())
-  Amount    String
-
-  @@map("incomes")
+model Category {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  projectedAmount Decimal  @default(0)
+  description     String?
+  autoInsert      Boolean  @default(false)
+  balanceType     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now())
+  deletedAt       DateTime
 }
