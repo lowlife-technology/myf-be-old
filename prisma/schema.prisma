@@ -15,13 +15,13 @@ model Identity {
 }
 
 model Category {
-  id              String   @id @default(uuid())
-  name            String   @unique
-  projectedAmount Decimal  @default(0)
+  id              String    @id @default(uuid())
+  name            String    @unique
+  projectedAmount Decimal   @default(0)
   description     String?
-  autoInsert      Boolean  @default(false)
+  autoInsert      Boolean   @default(false)
   balanceType     String
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @default(now())
-  deletedAt       DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+  deletedAt       DateTime?
 }

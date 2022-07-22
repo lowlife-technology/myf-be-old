@@ -1,20 +1,22 @@
+import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
 interface CreateCategoryResposeBody{
   name: string;
-  frequency?: Date;
-  avaregeAmount?: number;
-  fixedAmount?: number;
+  projectedAmount?: number;
   description?: string;
-  type: 'INCOME' | 'EXPENSE';
+  autoInsert: boolean;
+  balanceType: 'INCOME' | 'EXPENSE';
 }
 
-export default (req: Request<any, any, CreateCategoryResposeBody>, res: Response) => {
+const prisma = new PrismaClient();
+
+export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Response) => {
   const {
-    name, frequency, avaregeAmount, fixedAmount, description, type,
+    name, projectedAmount, autoInsert, description, balanceType,
   } = req.body;
 
-  if (!name || !type) {
+  if (!name || !balanceType) {
     res.status(400).send({
       message: 'Missing required fields',
       status: 'error',
@@ -23,7 +25,7 @@ export default (req: Request<any, any, CreateCategoryResposeBody>, res: Response
     return;
   }
 
-  if (type !== 'INCOME' && type !== 'EXPENSE') {
+  if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
     res.status(400).send({
       message: 'Invalid type',
       status: 'error',
@@ -32,9 +34,24 @@ export default (req: Request<any, any, CreateCategoryResposeBody>, res: Response
     return;
   }
 
-  // TODO: a push to the database
-  // TODO: await the response
-  // create an id or let prisma do it
+  try {
+    const category = await prisma.category.create({
+      data: {
+        name,
+        projectedAmount,
+        autoInsert,
+        description,
+        balanceType,
+      },
+    });
 
-  res.status(201);
+    if (category) {
+      res.status(201);
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: 'Internal server error',
+      status: 'error',
+    });
+  }
 };

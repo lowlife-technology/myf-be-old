@@ -1,29 +1,30 @@
+import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
 interface UpdateCategoryParams {
-  id: number;
+  id: string;
 }
 
 interface UpdateCategoryBody {
-  categoryName: string;
-  currentDate: Date;
-  avaregeAmount: number;
-  fixedAmount: number;
+  name: string;
+  projectedAmount: number;
   description: string;
-  type: 'INCOME' | 'EXPENSE';
+  balanceType: 'INCOME' | 'EXPENSE';
 }
+
+const prisma = new PrismaClient();
 
 type UpdateCategoryRequest = Request<UpdateCategoryParams, any, UpdateCategoryBody>;
 
-export default () => (req: UpdateCategoryRequest, res: Response) => {
+export default () => async (req: UpdateCategoryRequest, res: Response) => {
   const {
     params: { id },
     body: {
-      categoryName, currentDate, avaregeAmount, fixedAmount, description, type,
+      name, projectedAmount, description, balanceType,
     },
   } = req;
 
-  if (!categoryName || !type || !currentDate || !avaregeAmount || !fixedAmount || !description) {
+  if (!name || !balanceType || !projectedAmount || !description) {
     res.status(400).send({
       message: 'Missing required fields',
       status: 'error',
@@ -40,7 +41,25 @@ export default () => (req: UpdateCategoryRequest, res: Response) => {
     return;
   }
 
-  // todo: update category by id from database.
-
-  res.status(200);
+  try {
+    const upDateCategory = await prisma.category.update({
+      where: {
+        id,
+      },
+      data: {
+        name,
+        projectedAmount,
+        description,
+        balanceType,
+      },
+    });
+    if (upDateCategory) {
+      res.status(200).send(upDateCategory);
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: 'Internal server error',
+      status: 'error',
+    });
+  }
 };
