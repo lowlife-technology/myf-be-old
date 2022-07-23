@@ -10,17 +10,6 @@ const prisma = new PrismaClient();
 export default async (req: Request<any, any, any, ListCategoryParams>, res: Response) => {
   const { balanceType } = req.query;
 
-  const [firstQueryKey] = Object.keys(req.query);
-
-  if (firstQueryKey !== 'balanceType') {
-    res.status(400).send({
-      message: `${firstQueryKey} is not a valid key. Valid key is balanceType`,
-      status: 'error',
-    });
-
-    return;
-  }
-
   if (!balanceType) {
     try {
       const categories = await prisma.category.findMany();
@@ -41,6 +30,17 @@ export default async (req: Request<any, any, any, ListCategoryParams>, res: Resp
         status: 'error',
       });
     }
+
+    return;
+  }
+
+  const [firstQueryKey] = Object.keys(req.query);
+
+  if (firstQueryKey !== 'balanceType') {
+    res.status(400).send({
+      message: `${firstQueryKey} is not a valid key. Valid key is balanceType`,
+      status: 'error',
+    });
 
     return;
   }

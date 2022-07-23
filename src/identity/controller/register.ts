@@ -40,7 +40,7 @@ router.post('/identity/register', (req: Request<any, any, CreateResponseBody>, r
     }
   });
 
-  res.status(200);
+  res.status(200).send();
 });
 
 export default router;

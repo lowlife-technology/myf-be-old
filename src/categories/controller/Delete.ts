@@ -8,22 +8,34 @@ interface DeleteCategoryRespose {
 const prisma = new PrismaClient();
 
 export default async (req: Request<any, any, DeleteCategoryRespose>, res: Response) => {
-  if (!req.body.id) {
+  const { id } = req.params;
+
+  const isIdValid = await prisma.category.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (isIdValid === null) {
     res.status(400).send({
-      message: 'Missing required fields',
+      message: 'Category not founded | deleted | empyt field',
       status: 'error',
     });
+    return;
   }
 
   try {
     const deleteCategory = await prisma.category.delete({
       where: {
-        id: req.body.id,
+        id,
       },
     });
 
     if (deleteCategory) {
-      res.status(201);
+      res.status(201).send({
+        message: 'Category deleted',
+        status: 'success',
+      });
     }
   } catch (error) {
     res.status(500).send({

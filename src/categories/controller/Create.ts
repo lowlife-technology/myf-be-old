@@ -1,96 +1,91 @@
-// import { PrismaClient } from '@prisma/client';
-// import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { Request, Response } from 'express';
 
-// interface CreateCategoryResposeBody{
-//   name: string;
-//   projectedAmount?: number;
-//   description?: string;
-//   autoInsert: boolean;
-//   balanceType: 'INCOME' | 'EXPENSE';
-// }
+interface CreateCategoryResposeBody{
+  name: string;
+  projectedAmount?: number;
+  description?: string;
+  autoInsert: boolean;
+  balanceType: 'INCOME' | 'EXPENSE';
+}
 
-// const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
-export default (req: any, res: any) => {
-  // const {
-  //   name, projectedAmount, autoInsert, description, balanceType,
-  // } = req.body;
+export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Response) => {
+  const {
+    name, projectedAmount, autoInsert, description, balanceType,
+  } = req.body;
 
-  // if (!name || !balanceType) {
-  //   res.status(400).send({
-  //     message: 'Missing required fields',
-  //     status: 'error',
-  //   });
+  if (!name || !balanceType) {
+    res.status(400).send({
+      message: 'Missing required fields',
+      status: 'error',
+    });
 
-  //   return;
-  // }
+    return;
+  }
 
-  // if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
-  //   res.status(400).send({
-  //     message: 'Invalid type',
-  //     status: 'error',
-  //   });
+  if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
+    res.status(400).send({
+      message: 'Invalid type',
+      status: 'error',
+    });
 
-  //   return;
-  // }
+    return;
+  }
 
-  // // todo: make a better logic to validate it.
-  // if (typeof autoInsert !== 'boolean' || typeof projectedAmount !== 'number' || typeof description !== 'string') {
-  //   res.status(400).send({
-  //     message: 'Invalid value',
-  //     status: 'error',
-  //   });
+  // todo: make a better logic to validate it.
+  if (typeof autoInsert !== 'boolean' || typeof
+  projectedAmount !== 'number' || typeof description !== 'string') {
+    res.status(400).send({
+      message: 'Invalid value',
+      status: 'error',
+    });
 
-  //   return;
-  // }
+    return;
+  }
 
-  // try {
-  //   const isValidName = await prisma.category.findUnique({
-  //     where: {
-  //       name,
-  //     },
-  //   });
+  try {
+    const isValidName = await prisma.category.findUnique({
+      where: {
+        name,
+      },
+    });
 
-  //   if (isValidName) {
-  //     res.status(400).send({
-  //       message: 'Category already exists',
-  //       status: 'error',
-  //     });
+    if (isValidName) {
+      res.status(400).send({
+        message: 'Category already exists',
+        status: 'error',
+      });
 
-  //     return;
-  //   }
+      return;
+    }
 
-  //   const category = await prisma.category.create({
-  //     data: {
-  //       name,
-  //       projectedAmount,
-  //       autoInsert,
-  //       description,
-  //       balanceType,
-  //     },
+    const category = await prisma.category.create({
+      data: {
+        name,
+        projectedAmount,
+        autoInsert,
+        description,
+        balanceType,
+      },
 
-  //   });
+    });
 
-  //   // if (!category) {
-  //   //   res.status(500).send({
-  //   //     message: 'Couldn\'t create category.',
-  //   //     status: 'error',
-  //   //   });
+    if (!category) {
+      res.status(500).send({
+        message: 'Couldn\'t create category.',
+        status: 'error',
+      });
 
-  //   //   return;
-  //   // }
+      return;
+    }
 
-  //   console.log('deu certo?');
-  //   res.status(200);
-  //   console.log('depois do 201');
-  // } catch (error) {
-  //   console.log(error);
-  //   res.status(500).send({
-  //     message: 'Internal server error',
-  //     status: 'error',
-  //   });
-  // }
-
-  console.log('asjaspdoaiosjda');
-  res.status(400);
+    res.status(200).send();
+  } catch (error) {
+    res.status(500).send({
+      message: 'Internal server error',
+      status: 'error',
+    });
+  }
 };
