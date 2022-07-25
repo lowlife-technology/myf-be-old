@@ -10,6 +10,14 @@ app.use(loginRouter);
 app.use(registerRouter);
 app.use(categoryController);
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.get('/', (_, res) => {
+  res.status(200).send({
+    message: 'runing!',
+  });
+});
+
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
