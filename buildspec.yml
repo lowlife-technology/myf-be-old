@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+      - apt-get install -y nodejs
+  build:
+    commands:
+      - npm install
+      - npm run build
+  post_build:
+    commands:
+      - npx prisma generate
+      - npx prisma migrate deploy
