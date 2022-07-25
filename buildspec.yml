@@ -13,7 +13,7 @@ phases:
     commands:
       - npm install
       - npm run build
-      - zip build/myfbe-dev.zip -r build package.json -r prisma .npmrc yarn.lock
+      - zip build/myfbe-dev.zip -r build package.json -r prisma .npmrc package-lock.json
   post_build:
     commands:
       - npx prisma generate
