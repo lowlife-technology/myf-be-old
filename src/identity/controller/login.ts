@@ -59,6 +59,8 @@ router.post('/identity/login', async (req :Request<any, any, LoginResponseBody >
       status: 'error',
     });
   }
+
+  console.log('qualquer coisa');
 });
 
 export default router;
