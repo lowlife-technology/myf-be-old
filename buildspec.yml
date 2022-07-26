@@ -20,5 +20,5 @@ phases:
       - cp package.json -r prisma .npmrc build
 artifacts:
   files:
-    - build/**/*
+    - ./build/**/*
   discard-paths: no
