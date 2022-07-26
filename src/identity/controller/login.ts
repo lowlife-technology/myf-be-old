@@ -46,11 +46,17 @@ router.post(
           const token = jwt.sign({ email }, 'qualquer');
 
           res.status(201).send({
-            message: '',
+            message: 'user logged in',
             status: 'success',
             data: {
               token: `Bearer ${token}`
             }
+          });
+        }
+        if (password !== foundUser.password) {
+          res.status(400).send({
+            message: 'wrong email or password',
+            status: 'error'
           });
         }
       }
@@ -60,8 +66,6 @@ router.post(
         status: 'error'
       });
     }
-
-    console.log('qualquer coisa');
   }
 );
 
