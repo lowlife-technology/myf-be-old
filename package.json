@@ -5,7 +5,7 @@
   "author": "Derick abreu",
   "license": "MIT",
   "scripts": {
-    "start": "node build/app.js",
+    "start": "node app.js",
     "dev": "ts-node-dev app.ts",
     "build": "tsc --build",
     "build:start": "tsc --build && node build/app.js"
