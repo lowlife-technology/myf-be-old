@@ -6,7 +6,7 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-interface LoginResponseBody {
+interface LoginRequest {
   email: string;
   password: string;
 }
@@ -21,13 +21,13 @@ interface LoginResponse {
 
 router.post(
   '/identity/login',
-  async (req: Request<any, any, LoginResponseBody>, res: Response<LoginResponse>) => {
+  async (req: Request<any, LoginResponse, LoginRequest>, res: Response<LoginResponse>) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
       res.status(400).send({
         message: 'Missing required fields',
-        status: 'error'
+        status: 'error',
       });
 
       return;
@@ -35,7 +35,7 @@ router.post(
 
     try {
       const foundUser = await prisma.identity.findUnique({
-        where: { email }
+        where: { email },
       });
 
       if (foundUser) {
@@ -49,24 +49,25 @@ router.post(
             message: 'user logged in',
             status: 'success',
             data: {
-              token: `Bearer ${token}`
-            }
+              token: `Bearer ${token}`,
+            },
           });
+
+          return;
         }
-        if (password !== foundUser.password) {
-          res.status(400).send({
-            message: 'wrong email or password',
-            status: 'error'
-          });
-        }
+
+        res.status(400).send({
+          message: 'wrong email or password',
+          status: 'error',
+        });
       }
     } catch (error) {
-      res.status(404).send({
-        message: 'User not found',
-        status: 'error'
+      res.status(500).send({
+        message: 'internal error',
+        status: 'error',
       });
     }
-  }
+  },
 );
 
 export default router;
