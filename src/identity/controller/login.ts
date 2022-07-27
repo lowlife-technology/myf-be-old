@@ -16,51 +16,57 @@ interface LoginResponse {
   status: string;
   data?: {
     token: string;
-  }
-
+  };
 }
 
-router.post('/identity/login', async (req :Request<any, any, LoginResponseBody >, res: Response<LoginResponse>) => {
-  const { email, password } = req.body;
+router.post(
+  '/identity/login',
+  async (req: Request<any, any, LoginResponseBody>, res: Response<LoginResponse>) => {
+    const { email, password } = req.body;
 
-  if (!email || !password) {
-    res.status(400).send({
-      message: 'Missing required fields',
-      status: 'error',
-    });
+    if (!email || !password) {
+      res.status(400).send({
+        message: 'Missing required fields',
+        status: 'error'
+      });
 
-    return;
-  }
-
-  try {
-    const foundUser = await prisma.identity.findUnique({
-      where: { email },
-    });
-
-    if (foundUser) {
-      const validPassword = await bcrypt.compare(password, foundUser.password);
-
-      if (validPassword) {
-        // todo: generate a token that expires!
-        const token = jwt.sign({ email }, 'qualquer');
-
-        res.status(201).send({
-          message: '',
-          status: 'success',
-          data: {
-            token: `Bearer ${token}`,
-          },
-        });
-      }
+      return;
     }
-  } catch (error) {
-    res.status(404).send({
-      message: 'User not found',
-      status: 'error',
-    });
-  }
 
-  console.log('qualquer coisa');
-});
+    try {
+      const foundUser = await prisma.identity.findUnique({
+        where: { email }
+      });
+
+      if (foundUser) {
+        const validPassword = await bcrypt.compare(password, foundUser.password);
+
+        if (validPassword) {
+          // todo: generate a token that expires!
+          const token = jwt.sign({ email }, 'qualquer');
+
+          res.status(201).send({
+            message: 'user logged in',
+            status: 'success',
+            data: {
+              token: `Bearer ${token}`
+            }
+          });
+        }
+        if (password !== foundUser.password) {
+          res.status(400).send({
+            message: 'wrong email or password',
+            status: 'error'
+          });
+        }
+      }
+    } catch (error) {
+      res.status(404).send({
+        message: 'User not found',
+        status: 'error'
+      });
+    }
+  }
+);
 
 export default router;
