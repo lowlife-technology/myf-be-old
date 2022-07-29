@@ -6,7 +6,7 @@ const ses = new SES({
   secretAccessKey: 'DzEi9wKh1OSgDyIMc9un0lIh5bUDVPz8+x6ZWNXE'
 });
 
-export default async () => {
+export default async (ToAddresses: string, BodyData: string, SubjectData: string) => {
   console.log('sending Email function is run.');
 
   try {
@@ -14,16 +14,16 @@ export default async () => {
       .sendEmail(
         {
           Destination: {
-            ToAddresses: ['danskyjs@icloud.com', 'drckbr@gmail.com']
+            ToAddresses: [ToAddresses]
           },
           Message: {
             Body: {
               Text: {
-                Data: 'teste teste teste'
+                Data: BodyData
               }
             },
             Subject: {
-              Data: 'teste teste teste teste'
+              Data: SubjectData
             }
           },
           Source: 'myf.finances@gmail.com',
@@ -37,7 +37,7 @@ export default async () => {
 
     console.log({ sendRes });
   } catch (err) {
-    const { message } = err;
+    const { message } = err as any;
     console.log({ message });
     throw new Error(message);
   }

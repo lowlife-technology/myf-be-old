@@ -14,6 +14,12 @@ model Identity {
   password String @unique
 }
 
+model Token {
+  id       Int   @id @default(autoincrement())
+  token    Int @unique
+  email    String @unique
+}
+
 model Category {
   id              String    @id @default(uuid())
   name            String    @unique

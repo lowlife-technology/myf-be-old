@@ -19,7 +19,7 @@ router.post(
     if (!req.body.email || !req.body.password || !req.body.fullName) {
       res.status(400).send({
         message: 'Missing required fields',
-        status: 'error',
+        status: 'error'
       });
       return;
     }
@@ -30,8 +30,8 @@ router.post(
       try {
         const foundUser = await prisma.identity.findUnique({
           where: {
-            email: req.body.email,
-          },
+            email: req.body.email
+          }
         });
 
         if (foundUser?.email !== req.body.email) {
@@ -39,8 +39,8 @@ router.post(
             data: {
               password: hash,
               email: req.body.email,
-              fullName: req.body.fullName,
-            },
+              fullName: req.body.fullName
+            }
           });
 
           res.status(200).send();
@@ -52,11 +52,11 @@ router.post(
       } catch (error) {
         res.status(500).send({
           message: 'internal error',
-          status: 'error',
+          status: 'error'
         });
       }
     });
-  },
+  }
 );
 
 export default router;

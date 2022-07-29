@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "dev": "tsnd --transpile-only --respawn --ignore-watch node_modules app.ts",
+    "dev": "ts-node-dev --quiet --ignore-watch node_modules --exit-child --clear --respawn app.ts",
     "build": "tsc --build",
     "build:start": "tsc --build && node build/app.js"
   },

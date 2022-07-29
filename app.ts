@@ -4,7 +4,7 @@ import AWS from 'aws-sdk';
 import loginRouter from './src/identity/controller/login';
 import registerRouter from './src/identity/controller/register';
 import categoryController from './src/categories/controller';
-import sendingEmail from './src/identity/services/sendingEmail';
+import sendEmailToken from './src/identity/controller/sendEmailToken';
 
 // TODO: create a file to load and check if credentials are loaded correctly.
 AWS.config.getCredentials((err, credentials) => {
@@ -20,10 +20,9 @@ app.use(express.json());
 app.use(loginRouter);
 app.use(registerRouter);
 app.use(categoryController);
+app.use(sendEmailToken);
 
-app.get('/', async (_, res) => {
-  await sendingEmail();
-
+app.get('/', (_, res) => {
   res.status(200).send({
     message: 'runing!'
   });
