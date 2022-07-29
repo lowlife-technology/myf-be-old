@@ -7,8 +7,6 @@ const ses = new SES({
 });
 
 export default async (ToAddresses: string, BodyData: string, SubjectData: string) => {
-  console.log('sending Email function is run.');
-
   try {
     const sendRes = await ses
       .sendEmail(
@@ -29,15 +27,11 @@ export default async (ToAddresses: string, BodyData: string, SubjectData: string
           Source: 'myf.finances@gmail.com',
           ConfigurationSetName: 'myfConfigurationSetName'
         },
-        (err, data) => {
-          console.log({ err, data });
-        }
-      )
+          )
       .promise();
 
     return sendRes;
   } catch (err) {
-    const { message } = err as any;
-    return message;
+    return err;
   }
 };
