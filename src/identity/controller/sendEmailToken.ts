@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client';
 import express, { Request, Response } from 'express';
-import sendingEmail from '../services/sendingEmail';
+// import sendingEmail from '../services/sendingEmail';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 const router = express.Router();
 
@@ -14,12 +14,11 @@ router.post(
   '/identity/sendEmailToken',
   async (req: Request<any, any, SendEmailTokenRequestBody>, res: Response) => {
     const { email } = req.body;
-    const token = Math.floor(Math.random() * 10000);
-    const foundUser = await prisma.token.findUnique({
-      where: {
-        email
-      }
-    });
+    // const foundUser = await prisma.token.findUnique({
+    //   where: {
+    //     // email
+    //   }
+    // });
 
     if (!email) {
       res.status(400).send({
@@ -30,27 +29,18 @@ router.post(
     }
 
     try {
-      if (foundUser?.email === email) {
-        await prisma.token.update({
-          where: {
-            email
-          },
-          data: {
-            email,
-            token
-          }
-        });
-        return;
-      }
-
-      sendingEmail(email, `Your token is ${token}`, 'Is that yours ?');
-
-      await prisma.token.create({
-        data: {
-          email,
-          token
-        }
-      });
+      // if (foundUser?.email === email) {
+      //   await prisma.token.update({
+      //     where: {
+      //       email
+      //     },
+      //     data: {
+      //       email,
+      //       token
+      //     }
+      //   });
+      //   return;
+      // }
 
       res.status(200).send({
         message: 'Email sent',

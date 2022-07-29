@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import sendingEmail from '../services/sendingEmail';
 
 const prisma = new PrismaClient();
 export interface RegisterResponseBody {
@@ -16,6 +17,8 @@ router.post(
   '/identity/register',
   async (req: Request<any, any, RegisterResponseBody>, res: Response) => {
     // todo: create validations
+    const token = Math.floor(Math.random() * 10000);
+
     if (!req.body.email || !req.body.password || !req.body.fullName) {
       res.status(400).send({
         message: 'Missing required fields',
@@ -35,6 +38,26 @@ router.post(
         });
 
         if (foundUser?.email !== req.body.email) {
+          const sendEmailResponse = await sendingEmail(
+            req.body.email,
+            `Your token is ${token}`,
+            'Is that yours ?'
+          );
+
+          console.log(sendEmailResponse);
+
+          const expireAt = new Date();
+          const minuteInEpoch = 1 * 60 * 1000;
+          expireAt.setTime(expireAt.getDate() + minuteInEpoch);
+
+          await prisma.token.create({
+            data: {
+              token,
+              status: 'inactive',
+              expireAt
+            }
+          });
+
           await prisma.identity.create({
             data: {
               password: hash,

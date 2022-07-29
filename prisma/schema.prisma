@@ -15,9 +15,10 @@ model Identity {
 }
 
 model Token {
-  id       Int   @id @default(autoincrement())
-  token    Int @unique
-  email    String @unique
+  id        Int   @id @default(autoincrement())
+  token     Int @unique
+  status    String @default("inactive")
+  expireAt DateTime
 }
 
 model Category {

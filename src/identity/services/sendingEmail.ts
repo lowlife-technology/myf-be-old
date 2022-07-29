@@ -35,10 +35,9 @@ export default async (ToAddresses: string, BodyData: string, SubjectData: string
       )
       .promise();
 
-    console.log({ sendRes });
+    return sendRes;
   } catch (err) {
     const { message } = err as any;
-    console.log({ message });
-    throw new Error(message);
+    return message;
   }
 };
