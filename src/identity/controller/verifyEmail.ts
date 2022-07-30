@@ -1,32 +1,64 @@
 import { PrismaClient } from '@prisma/client';
-import express, { Request, Response } from 'express';
+import express from 'express';
 
 const prisma = new PrismaClient();
 
 const router = express.Router();
 
-router.post('/identity/verifyEmail', async (req: Request, res: Response) => {
-  const { token } = req.body;
+router.patch('/identity/verifyEmail', async (req, res) => {
+  const token = Number(req.query?.token);
 
-  if (!token) {
+  if (Number.isNaN(token) || token === 0) {
     res.status(400).send({
-      message: 'No token provided',
-      status: 'erro'
+      message: 'Token is required',
+      status: 'error'
     });
   }
 
   try {
-    const foundToken = await prisma.token.findUnique({
+    const findToken = await prisma.token.findUnique({
       where: {
         token
       }
     });
-    if (foundToken?.token !== token) {
+
+    if (findToken?.status === 'active') {
       res.status(400).send({
-        message: 'Invalid token',
-        status: 'erro'
+        message: 'Token is already verified',
+        status: 'error'
       });
     }
+
+    if (findToken?.token !== token) {
+      res.status(400).send({
+        message: 'Invalid token',
+        status: 'error'
+      });
+      return;
+    }
+
+    const endTime: any = findToken?.expireAt.getTime();
+    const now = new Date();
+    const currentTime = now.getTime();
+
+    console.log(endTime, currentTime);
+
+    if (currentTime > endTime) {
+      res.status(400).send({
+        mesasge: 'Token has expired',
+        status: 'error'
+      });
+      return;
+    }
+
+    await prisma.token.update({
+      where: {
+        token
+      },
+      data: {
+        status: 'active'
+      }
+    });
 
     res.status(200).send();
   } catch (error) {
@@ -36,3 +68,5 @@ router.post('/identity/verifyEmail', async (req: Request, res: Response) => {
     });
   }
 });
+
+export default router;

@@ -19,7 +19,7 @@ model Token {
   id        Int   @id @default(autoincrement())
   token     Int @unique
   status    String @default("inactive")
-  expireAt  DateTime
+  expireAt  DateTime @default(now())
   identity  Identity @relation(fields: [userId], references: [id]) // doesn't exist!
   userId    String   @unique
 }

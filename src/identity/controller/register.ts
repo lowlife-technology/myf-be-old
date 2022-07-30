@@ -56,7 +56,7 @@ router.post(
 
           const expireAt = new Date();
           const minuteInEpoch = 1 * 60 * 1000;
-          expireAt.setTime(expireAt.getDate() + minuteInEpoch);
+          expireAt.setTime(expireAt.getTime() + minuteInEpoch);
 
           await prisma.identity.create({
             data: {

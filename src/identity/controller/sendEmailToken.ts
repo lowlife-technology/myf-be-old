@@ -29,13 +29,27 @@ router.post(
       const token = Math.floor(Math.random() * 10000);
       const expireAt = new Date();
       const minuteInEpoch = 1 * 60 * 1000;
-      expireAt.setTime(expireAt.getDate() + minuteInEpoch);
+      expireAt.setTime(expireAt.getTime() + minuteInEpoch);
 
       const foundUser = await prisma.identity.findUnique({
         where: {
           email
+        },
+        select: {
+          token: {
+            select: {
+              status: true
+            }
+          }
         }
       });
+
+      if (foundUser?.token?.status === 'active') {
+        res.status(400).send({
+          message: 'Token is already verified',
+          status: 'error'
+        });
+      }
 
       if (!foundUser) {
         res.status(400).send({
@@ -46,7 +60,7 @@ router.post(
         return;
       }
 
-      const updatedToken = await prisma.identity.update({
+      await prisma.identity.update({
         where: { email },
         data: {
           token: {

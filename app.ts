@@ -5,6 +5,7 @@ import loginRouter from './src/identity/controller/login';
 import registerRouter from './src/identity/controller/register';
 import categoryController from './src/categories/controller';
 import sendEmailToken from './src/identity/controller/sendEmailToken';
+import verifyEmail from './src/Identity/controller/verifyEmail';
 
 // TODO: create a file to load and check if credentials are loaded correctly.
 AWS.config.getCredentials((err, credentials) => {
@@ -21,6 +22,7 @@ app.use(loginRouter);
 app.use(registerRouter);
 app.use(categoryController);
 app.use(sendEmailToken);
+app.use(verifyEmail);
 
 app.get('/', (_, res) => {
   res.status(200).send({
