@@ -26,7 +26,7 @@ router.post(
       });
       return;
     }
-const numberOfRounds = 10;
+    const numberOfRounds = 10;
 
     bcrypt.hash(req.body.password, numberOfRounds, async (err, hash) => {
       try {
@@ -37,41 +37,39 @@ const numberOfRounds = 10;
         });
 
         if (foundUser?.email !== req.body.email) {
-	  // TODO: add type to sendEmailResponse
-          const sendEmailResponse  = await sendingEmail(
+          // TODO: add type to sendEmailResponse
+          const sendEmailResponse = (await sendingEmail(
             req.body.email,
             `Your token is ${token}`,
             'Is that yours ?'
-          )as any;
+          )) as any;
 
-	  
-if (sendEmailResponse?.code) {
-  // TODO: treat error message
-  res.status(400).send({
-    message: sendEmailResponse.message,
-    status: 'error',
-  });
+          if (sendEmailResponse?.code) {
+            // TODO: treat error message
+            res.status(400).send({
+              message: sendEmailResponse.message,
+              status: 'error'
+            });
 
-  return;
-};
+            return;
+          }
 
           const expireAt = new Date();
           const minuteInEpoch = 1 * 60 * 1000;
           expireAt.setTime(expireAt.getDate() + minuteInEpoch);
 
-          await prisma.token.create({
-            data: {
-              token,
-              status: 'inactive',
-              expireAt
-            }
-          });
-
           await prisma.identity.create({
             data: {
               password: hash,
               email: req.body.email,
-              fullName: req.body.fullName
+              fullName: req.body.fullName,
+              token: {
+                create: {
+                  expireAt,
+                  token,
+                  status: 'inactive'
+                }
+              }
             }
           });
 
@@ -82,7 +80,7 @@ if (sendEmailResponse?.code) {
 
         res.status(400).send({ message: 'User allready existe' });
       } catch (error) {
-	console.log(error);
+        console.log(error);
 
         res.status(500).send({
           message: 'internal error',

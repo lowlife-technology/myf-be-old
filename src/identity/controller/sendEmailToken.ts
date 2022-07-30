@@ -1,8 +1,9 @@
-// import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import express, { Request, Response } from 'express';
+import sendingEmail from '../services/sendingEmail';
 // import sendingEmail from '../services/sendingEmail';
 
-// const prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
 const router = express.Router();
 
@@ -14,38 +15,67 @@ router.post(
   '/identity/sendEmailToken',
   async (req: Request<any, any, SendEmailTokenRequestBody>, res: Response) => {
     const { email } = req.body;
-    // const foundUser = await prisma.token.findUnique({
-    //   where: {
-    //     // email
-    //   }
-    // });
 
     if (!email) {
       res.status(400).send({
         message: 'No email provided',
         status: 'error'
       });
+
       return;
     }
 
     try {
-      // if (foundUser?.email === email) {
-      //   await prisma.token.update({
-      //     where: {
-      //       email
-      //     },
-      //     data: {
-      //       email,
-      //       token
-      //     }
-      //   });
-      //   return;
-      // }
+      const token = Math.floor(Math.random() * 10000);
+      const expireAt = new Date();
+      const minuteInEpoch = 1 * 60 * 1000;
+      expireAt.setTime(expireAt.getDate() + minuteInEpoch);
 
-      res.status(200).send({
-        message: 'Email sent',
-        status: 'success'
+      const foundUser = await prisma.identity.findUnique({
+        where: {
+          email
+        }
       });
+
+      if (!foundUser) {
+        res.status(400).send({
+          message: 'Wrong email provided.',
+          status: 'error'
+        });
+
+        return;
+      }
+
+      const updatedToken = await prisma.identity.update({
+        where: { email },
+        data: {
+          token: {
+            update: {
+              expireAt,
+              token
+            }
+          }
+        }
+      });
+
+      // TODO: add type to sendEmailResponse
+      const sendEmailResponse = (await sendingEmail(
+        req.body.email,
+        `Your token is ${token}`,
+        'Is that yours ?'
+      )) as any;
+
+      if (sendEmailResponse?.code) {
+        // TODO: treat error message
+        res.status(400).send({
+          message: sendEmailResponse.message,
+          status: 'error'
+        });
+
+        return;
+      }
+
+      res.status(200).send();
     } catch (error) {
       console.log(error);
 
