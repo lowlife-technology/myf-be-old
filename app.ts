@@ -26,7 +26,7 @@ app.use(verifyEmail);
 
 app.get('/', (_, res) => {
   res.status(200).send({
-    message: 'runing!'
+    message: 'runing!',
   });
 });
 
