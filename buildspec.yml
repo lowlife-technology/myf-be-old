@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    DATABASE_URL: 'postgresql://derick:drck1089@aatkjdhvwvy50i.cd5bvs8hmlav.us-east-1.rds.amazonaws.com:5432/myfbedev?schema=default'
+    DATABASE_URL: 'postgresql://derick:drck1089@aatkjdhvwvy50i.cd5bvs8hmlav.us-east-1.rds.amazonaws.com:5432/myfdb?schema=default'
 
 phases:
   install:
