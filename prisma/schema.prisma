@@ -13,6 +13,7 @@ model Identity {
   fullName String
   password String @unique
   token    Token? // won't exist!
+  balance  Balance?
 }
 
 model Token {
@@ -34,4 +35,19 @@ model Category {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now())
   deletedAt       DateTime?
+}
+
+
+model Balance {
+  id           String    @id @default(uuid())
+  amount       Int
+  description  String
+  eventDate    DateTime
+  identity     Identity  @relation(fields: [userId], references: [id]) // doesn't exist!
+  userId       String    @unique 
+  category     Category  @relation(fields: [categoryId], references: [id])
+  categoryId   String    @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+  deletedAt    DateTime?
 }
