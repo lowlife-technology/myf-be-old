@@ -1,10 +1,9 @@
 import express, { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../../../prisma';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 interface LoginRequest {
   email: string;
@@ -27,7 +26,7 @@ router.post(
     if (!email || !password) {
       res.status(400).send({
         message: 'Missing required fields',
-        status: 'error'
+        status: 'error',
       });
 
       return;
@@ -35,7 +34,7 @@ router.post(
 
     try {
       const foundUser = await prisma.identity.findUnique({
-        where: { email }
+        where: { email },
       });
 
       if (foundUser) {
@@ -45,12 +44,14 @@ router.post(
           // todo: generate a token that expires!
           const token = jwt.sign({ email }, 'qualquer');
 
+          prisma;
+
           res.status(201).send({
             message: 'user logged in',
             status: 'success',
             data: {
-              token: `Bearer ${token}`
-            }
+              token: `Bearer ${token}`,
+            },
           });
 
           return;
@@ -58,16 +59,16 @@ router.post(
 
         res.status(400).send({
           message: 'wrong email or password',
-          status: 'error'
+          status: 'error',
         });
       }
     } catch (error) {
       res.status(500).send({
         message: 'internal error',
-        status: 'error'
+        status: 'error',
       });
     }
-  }
+  },
 );
 
 export default router;

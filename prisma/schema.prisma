@@ -14,6 +14,7 @@ model Identity {
   password String @unique
   token    Token? // won't exist!
   balance  Balance?
+  bearer   Bearer?
 }
 
 model Token {
@@ -50,4 +51,14 @@ model Balance {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @default(now())
   deletedAt    DateTime?
+}
+
+model Bearer {
+  id         Int        @id @default(autoincrement())
+  token      String
+  identity   Identity   @relation(fields: [userId], references: [id])
+  userId     String     @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @default(now())
+  deletedAt  DateTime?
 }
