@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
-interface CreateCategoryResposeBody{
+interface CreateCategoryResposeBody {
   name: string;
   projectedAmount?: number;
   description?: string;
@@ -12,9 +12,8 @@ interface CreateCategoryResposeBody{
 const prisma = new PrismaClient();
 
 export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Response) => {
-  const {
-    name, projectedAmount, autoInsert, description, balanceType,
-  } = req.body;
+  const { name, projectedAmount, autoInsert, description, balanceType } = req.body;
+  const { authorization } = req.headers;
 
   if (!name || !balanceType) {
     res.status(400).send({
@@ -35,8 +34,11 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
   }
 
   // todo: make a better logic to validate it.
-  if (typeof autoInsert !== 'boolean' || typeof
-  projectedAmount !== 'number' || typeof description !== 'string') {
+  if (
+    typeof autoInsert !== 'boolean' ||
+    typeof projectedAmount !== 'number' ||
+    typeof description !== 'string'
+  ) {
     res.status(400).send({
       message: 'Invalid value',
       status: 'error',
@@ -46,7 +48,7 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
   }
 
   try {
-    const isValidName = await prisma.category.findUnique({
+    const isValidName = await prisma.category.findFirst({
       where: {
         name,
       },
@@ -61,20 +63,31 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
       return;
     }
 
+    const foundUser = await prisma.identity.findFirst({
+      where: {
+        bearer: {
+          token: authorization,
+        },
+      },
+    });
+
+    if (!foundUser?.id) throw new Error('Unauthorized!');
+
+    // TODO: check if name already exist.
     const category = await prisma.category.create({
       data: {
+        userId: foundUser.id,
         name,
         projectedAmount,
         autoInsert,
         description,
         balanceType,
       },
-
     });
 
     if (!category) {
       res.status(500).send({
-        message: 'Couldn\'t create category.',
+        message: "Couldn't create category.",
         status: 'error',
       });
 

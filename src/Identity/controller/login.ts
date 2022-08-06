@@ -44,7 +44,19 @@ router.post(
           // todo: generate a token that expires!
           const token = jwt.sign({ email }, 'qualquer');
 
-          prisma;
+          const tokenCreated = await prisma.bearer.upsert({
+            where: { userId: foundUser.id },
+            create: {
+              userId: foundUser.id,
+              token,
+            },
+            update: {
+              token,
+            },
+            include: { identity: true },
+          });
+
+          console.log(tokenCreated);
 
           res.status(201).send({
             message: 'user logged in',
@@ -63,6 +75,7 @@ router.post(
         });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).send({
         message: 'internal error',
         status: 'error',
