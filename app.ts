@@ -3,7 +3,7 @@ import express from 'express';
 import AWS from 'aws-sdk';
 import loginRouter from './src/Identity/controller/login';
 import registerRouter from './src/Identity/controller/register';
-import categoryController from './src/categories/controller';
+import categoryController from './src/Categories/controller';
 import sendEmailToken from './src/Identity/controller/sendEmailToken';
 import verifyEmail from './src/Identity/controller/verifyEmail';
 import { balanceRouter } from './src/Balance';
@@ -30,7 +30,7 @@ app.use(balanceRouter);
 
 app.get('/', (_, res) => {
   res.status(200).send({
-    message: 'runing!'
+    message: 'runing!',
   });
 });
 

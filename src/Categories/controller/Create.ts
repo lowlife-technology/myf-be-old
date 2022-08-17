@@ -63,29 +63,25 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
       return;
     }
 
-    const { identity } = await prisma.bearer.findFirst({
+    const foundUser = await prisma.identity.findFirst({
       where: {
-        token: authorization,
-      },
-      include: {
-        identity: true,
+        bearer: {
+          token: authorization,
+        },
       },
     });
 
-    if (!identity) {
-      res.status(401);
+    if (!foundUser?.id) throw new Error('Unauthorized!');
 
-      return;
-    }
-
+    // TODO: check if name already exist.
     const category = await prisma.category.create({
       data: {
+        userId: foundUser.id,
         name,
         projectedAmount,
         autoInsert,
         description,
         balanceType,
-        userId: identity.id,
       },
     });
 

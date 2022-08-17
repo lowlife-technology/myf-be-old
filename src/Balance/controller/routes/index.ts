@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '../../../../prisma';
-import { ErrorHandler } from '../../../utils/ErrorHandler';
+import { prisma } from '../../../../prisma';
 
 export interface ResponseBody {}
 
@@ -19,40 +18,47 @@ class Balance {
       const { amount, eventDate, categoryId, description } = request.body;
       const { authorization } = request.headers;
 
-      if (!amount && !categoryId)
-        throw new ErrorHandler({
-          httpCode: 400,
-          message: 'Invalid body. Fields amount and categoryId are required.'
-        });
+      if (!amount && !categoryId) {
+        response
+          .status(400)
+          .send({ message: 'Invalid body. Fields amount and categoryId are required.' });
+        return;
+      }
 
       const foundUser = await prisma.identity.findFirst({
         where: {
           bearer: {
-            token: authorization
-          }
-        }
+            token: authorization,
+          },
+        },
       });
 
-      if (!authorization || !foundUser)
-        throw new ErrorHandler({ httpCode: 401, message: 'Unauthorized' });
+      if (!authorization || !foundUser) {
+        response.status(401);
+        return;
+      }
 
-      if (typeof amount !== 'number')
-        throw new ErrorHandler({ httpCode: 400, message: 'amount must be type of number' });
+      if (typeof amount !== 'number') {
+        response.status(400).send({ message: 'amount must be type of number' });
+      }
 
       const { id: userId } = foundUser;
 
-      if (eventDate === '')
-        throw new ErrorHandler({
-          httpCode: 400,
-          message: 'However eventDate field is optional, it cannot be empty.'
-        });
+      if (eventDate === '') {
+        response
+          .status(400)
+          .send({ message: 'However eventDate field is optional, it cannot be empty.' });
+        return;
+      }
 
       const eventDateISO = new Date(eventDate!);
-      if (eventDate && eventDateISO?.toString() === 'Invalid Date')
-        throw new ErrorHandler({
-          httpCode: 400,
-          message: 'Invalid date format. Expected ISO UTC format.'
+      if (eventDate && eventDateISO?.toString() === 'Invalid Date') {
+        response.status(400).send({
+          message: 'Invalid date format. Expected ISO UTC format.',
         });
+
+        return;
+      }
 
       await prisma.balance.create({
         data: {
@@ -60,8 +66,8 @@ class Balance {
           userId,
           description,
           eventDate: eventDateISO,
-          categoryId
-        }
+          categoryId,
+        },
       });
 
       response.status(200).send();

@@ -31,9 +31,10 @@ export class CreateBalanceController implements ICreateBalanceController {
       const eventDateISO = new Date(eventDate!);
 
       if (eventDate && eventDateISO?.toString() === 'Invalid Date')
-        return response
-          .status(400)
-          .send({ message: 'Invalid date format. Expected ISO UTC format.' });
+        return response.status(400).send({
+          message:
+            'Invalid date format. Valid formats are: DD/MM/YYYY | YYYY-MM-DD | DD-MM-YYYY | YYYY-MM-DD',
+        });
 
       if (eventDate && typeof eventDate === 'string' && eventDate === '')
         return response
@@ -47,12 +48,13 @@ export class CreateBalanceController implements ICreateBalanceController {
 
       await this.createBalanceUseCase.execute(
         { ...request.body, eventDate: eventDateISO },
-        authorization
+        authorization,
       );
 
       return response.status(201).send();
     } catch (error) {
-      return response.status(400).send({ message: 'Internal Error' });
+      const { message } = error as { message: string };
+      return response.status(400).send({ message });
     }
   }
 }
