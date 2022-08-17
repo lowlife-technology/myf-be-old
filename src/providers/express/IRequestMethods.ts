@@ -1,7 +1,4 @@
 import { Request } from 'express';
+import { IResponse } from './IResponse';
 
-export interface IPostRequest<requestBody, responseBody>
-  extends Request<undefined, responseBody, requestBody> {
-  requestbody: requestBody;
-  responseBody: responseBody;
-}
+export interface IPostRequest<requestBody> extends Request<undefined, IResponse, requestBody> {}

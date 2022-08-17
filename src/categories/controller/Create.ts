@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 
-interface CreateCategoryResposeBody{
+interface CreateCategoryResposeBody {
   name: string;
   projectedAmount?: number;
   description?: string;
@@ -12,14 +12,12 @@ interface CreateCategoryResposeBody{
 const prisma = new PrismaClient();
 
 export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Response) => {
-  const {
-    name, projectedAmount, autoInsert, description, balanceType,
-  } = req.body;
+  const { name, projectedAmount, autoInsert, description, balanceType } = req.body;
 
   if (!name || !balanceType) {
     res.status(400).send({
       message: 'Missing required fields',
-      status: 'error',
+      status: 'error'
     });
 
     return;
@@ -28,34 +26,37 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
   if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
     res.status(400).send({
       message: 'Invalid type',
-      status: 'error',
+      status: 'error'
     });
 
     return;
   }
 
   // todo: make a better logic to validate it.
-  if (typeof autoInsert !== 'boolean' || typeof
-  projectedAmount !== 'number' || typeof description !== 'string') {
+  if (
+    typeof autoInsert !== 'boolean' ||
+    typeof projectedAmount !== 'number' ||
+    typeof description !== 'string'
+  ) {
     res.status(400).send({
       message: 'Invalid value',
-      status: 'error',
+      status: 'error'
     });
 
     return;
   }
 
   try {
-    const isValidName = await prisma.category.findUnique({
+    const isValidName = await prisma.category.findFirst({
       where: {
-        name,
-      },
+        name
+      }
     });
 
     if (isValidName) {
       res.status(400).send({
         message: 'Category already exists',
-        status: 'error',
+        status: 'error'
       });
 
       return;
@@ -67,15 +68,14 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
         projectedAmount,
         autoInsert,
         description,
-        balanceType,
-      },
-
+        balanceType
+      }
     });
 
     if (!category) {
       res.status(500).send({
-        message: 'Couldn\'t create category.',
-        status: 'error',
+        message: "Couldn't create category.",
+        status: 'error'
       });
 
       return;
@@ -85,7 +85,7 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
   } catch (error) {
     res.status(500).send({
       message: 'Internal server error',
-      status: 'error',
+      status: 'error'
     });
   }
 };

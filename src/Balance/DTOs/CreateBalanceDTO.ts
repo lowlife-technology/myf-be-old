@@ -1,6 +1,6 @@
 export interface ICreateBalanceDTO {
   amount: number;
   description?: string;
-  eventDate?: string;
+  eventDate?: Date;
   categoryId: string;
 }
