@@ -21,7 +21,7 @@ AWS.config.getCredentials((err, credentials) => {
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 
 app.use(loginRouter);
 app.use(registerRouter);
