@@ -1,5 +1,6 @@
 import express from 'express';
 
+import cors from 'cors';
 import AWS from 'aws-sdk';
 import loginRouter from './src/Identity/controller/login';
 import registerRouter from './src/Identity/controller/register';
@@ -20,6 +21,8 @@ AWS.config.getCredentials((err, credentials) => {
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
 app.use(loginRouter);
 app.use(registerRouter);
 app.use(categoryController);
