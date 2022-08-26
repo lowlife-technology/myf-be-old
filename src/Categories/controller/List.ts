@@ -1,80 +1,81 @@
-import { PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
+import { prisma } from '../../../prisma';
 
 interface ListCategoryParams {
   balanceType: 'INCOME' | 'EXPENSE';
 }
 
-const prisma = new PrismaClient();
-
 export default async (req: Request<any, any, any, ListCategoryParams>, res: Response) => {
   const { balanceType } = req.query;
+  const { authorization } = req.headers;
+
+  if (!authorization) {
+    return res.status(401).send({
+      message: 'unauthorized',
+    });
+  }
+
+  const user = await prisma.bearer.findFirst({
+    where: {
+      token: authorization,
+    },
+    include: {
+      identity: true,
+    },
+  });
+
+  if (!user) {
+    return res.status(401).send({
+      message: 'unauthorized',
+    });
+  }
 
   if (!balanceType) {
     try {
-      const categories = await prisma.category.findMany();
+      const categories = await prisma.category.findMany({
+        where: {
+          userId: user.userId,
+        },
+      });
 
-      if (categories.length === 0) {
-        res.status(400).send({
-          message: 'Category not found',
-          status: 'error'
-        });
-
-        return;
-      }
-
-      res.status(200).send(categories);
+      return res.status(200).send(categories);
     } catch (error) {
-      res.status(500).send({
+      return res.status(500).send({
         message: 'Internal server error',
-        status: 'error'
+        status: 'error',
       });
     }
-
-    return;
   }
 
   const [firstQueryKey] = Object.keys(req.query);
 
   if (firstQueryKey !== 'balanceType') {
-    res.status(400).send({
+    return res.status(400).send({
       message: `${firstQueryKey} is not a valid key. Valid key is balanceType`,
-      status: 'error'
+      status: 'error',
     });
-
-    return;
   }
 
   if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
-    res.status(400).send({
+    return res.status(400).send({
       message: `Invalid query param ${balanceType} provided. Valid params are: INCOME or EXPENSE`,
-      status: 'error'
+      status: 'error',
     });
-
-    return;
   }
 
   try {
     const categories = await prisma.category.findMany({
       where: {
-        balanceType
-      }
+        balanceType,
+        userId: user.userId,
+      },
     });
 
-    if (categories.length === 0) {
-      res.status(400).send({
-        message: `Category with balanceType ${balanceType} was not found`,
-        status: 'error'
-      });
-
-      return;
-    }
-
-    res.status(200).send(categories);
+    return res.status(200).send(categories);
   } catch (error) {
-    res.status(500).send({
-      message: 'Internal server error',
-      status: 'error'
+    return res.status(500).send({
+      message: error,
+      status: 'error',
     });
   }
 };
