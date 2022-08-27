@@ -15,22 +15,20 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
   const { name, projectedAmount, autoInsert, description, balanceType } = req.body;
   const { authorization } = req.headers;
 
+  if (!authorization) return res.status(401).send();
+
   if (!name || !balanceType) {
-    res.status(400).send({
+    return res.status(400).send({
       message: 'Missing required fields',
       status: 'error',
     });
-
-    return;
   }
 
   if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
-    res.status(400).send({
+    return res.status(400).send({
       message: 'Invalid type',
       status: 'error',
     });
-
-    return;
   }
 
   // todo: make a better logic to validate it.
@@ -39,30 +37,13 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
     typeof projectedAmount !== 'number' ||
     typeof description !== 'string'
   ) {
-    res.status(400).send({
-      message: 'Invalid value',
+    return res.status(400).send({
+      message: 'Invalid autoInsert, projectedAmount or description data type',
       status: 'error',
     });
-
-    return;
   }
 
   try {
-    const isValidName = await prisma.category.findFirst({
-      where: {
-        name,
-      },
-    });
-
-    if (isValidName) {
-      res.status(400).send({
-        message: 'Category already exists',
-        status: 'error',
-      });
-
-      return;
-    }
-
     const foundUser = await prisma.identity.findFirst({
       where: {
         bearer: {
@@ -73,7 +54,22 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
 
     if (!foundUser?.id) throw new Error('Unauthorized!');
 
-    // TODO: check if name already exist.
+    const isValidName = await prisma.category.findFirst({
+      where: {
+        name,
+        identity: {
+          id: foundUser.id,
+        },
+      },
+    });
+
+    if (isValidName) {
+      return res.status(400).send({
+        message: 'Category already exist',
+        status: 'error',
+      });
+    }
+
     const category = await prisma.category.create({
       data: {
         userId: foundUser.id,
@@ -86,18 +82,16 @@ export default async (req: Request<any, any, CreateCategoryResposeBody>, res: Re
     });
 
     if (!category) {
-      res.status(500).send({
+      return res.status(500).send({
         message: "Couldn't create category.",
         status: 'error',
       });
-
-      return;
     }
 
-    res.status(200).send();
+    return res.status(200).send();
   } catch (error) {
-    res.status(500).send({
-      message: 'Internal server error',
+    return res.status(500).send({
+      message: error,
       status: 'error',
     });
   }

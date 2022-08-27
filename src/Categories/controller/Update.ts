@@ -19,67 +19,79 @@ type UpdateCategoryRequest = Request<UpdateCategoryParams, any, UpdateCategoryBo
 export default async (req: UpdateCategoryRequest, res: Response) => {
   const {
     params: { id },
-    body: {
-      name, projectedAmount, description, balanceType,
-    },
+    body: { name, projectedAmount, description, balanceType },
+    headers: { authorization },
   } = req;
 
-  console.log(id);
+  if (!authorization) return res.status(401).send({ message: 'unauthorized' });
 
   if (!name || !balanceType || !projectedAmount || !description) {
-    res.status(400).send({
+    return res.status(400).send({
       message: 'Missing required fields',
       status: 'error',
     });
-
-    return;
   }
 
   if (
-    typeof name !== 'string'
-    || typeof balanceType !== 'string'
-    || typeof projectedAmount !== 'number'
-    || typeof description !== 'string') {
-    res.status(400).send({
+    typeof name !== 'string' ||
+    typeof balanceType !== 'string' ||
+    typeof projectedAmount !== 'number' ||
+    typeof description !== 'string'
+  ) {
+    return res.status(400).send({
       message: 'Field wrong value type',
       status: 'error',
     });
   }
 
   if (balanceType !== 'INCOME' && balanceType !== 'EXPENSE') {
-    res.status(400).send({
+    return res.status(400).send({
       message: `${balanceType} is not assinged to type : INCOME | EXPENSE`,
       status: 'error',
     });
   }
 
   if (!id) {
-    res.status(400).send({
+    return res.status(400).send({
       message: 'Missing required id',
       status: 'error',
     });
-    return;
   }
 
   try {
-    const upDateCategory = await prisma.category.update({
+    const user = await prisma.identity.findFirst({
       where: {
-        id,
-      },
-      data: {
-        name,
-        projectedAmount,
-        description,
-        balanceType,
+        bearer: {
+          token: authorization,
+        },
       },
     });
-    if (upDateCategory) {
-      res.status(200).send();
-      return;
-    }
+
+    await prisma.identity.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        categories: {
+          update: {
+            where: {
+              id,
+            },
+            data: {
+              name,
+              projectedAmount,
+              description,
+              balanceType,
+            },
+          },
+        },
+      },
+    });
+
+    return res.status(200).send();
   } catch (error) {
-    res.status(500).send({
-      message: 'Internal server error',
+    return res.status(500).send({
+      message: error,
       status: 'error',
     });
   }
