@@ -1,17 +1,30 @@
-version: "3.9"
+version: '3.8'
 services:
   backend:
-    build: .
+    container_name: backend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    working_dir: /app
     volumes:
-      - .:/usr/app
-      - /usr/src/app/node_modules
+      - ./:/app
+      - /app/node_modules
     ports:
-      - "3000:3000"
+      - '3000:3000'
+
   postgres:
+    container_name: postgres
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: 0101
-      POSTGRES_USER: murasaki
-      POSTGRES_DB: myfdb
-    
+      - POSTGRES_PASSWORD=0000
+      - POSTGRES_DB=myfdb
+
+  yarn:
+    profiles: ['yarn']
+    container_name: 'yarn'
+    image: node:18
+    working_dir: /app
+    volumes:
+      - .:/app
+    entrypoint: ['yarn']

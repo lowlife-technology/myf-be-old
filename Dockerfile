@@ -1,6 +1,15 @@
-FROM node:16
-WORKDIR /usr/app
-COPY . .
+FROM node:18
+
+WORKDIR /app
+
+COPY package.json /app
+
 RUN yarn install
-CMD ["yarn", "dev"]
+
+COPY . /app
+
 EXPOSE 3000
+
+RUN yarn prisma generate
+
+CMD ["yarn", "dev"]
