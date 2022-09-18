@@ -16,12 +16,13 @@ router.get('/balance', async (request, response) => {
     },
     include: {
       balances: true,
+      categories: true,
     },
   });
 
   if (!userData.id) return response.status(401).send();
 
-  const { balances } = userData;
+  const { balances, categories } = userData;
 
   const monthsSet: any = new Set([]);
   balances.forEach((balance) => monthsSet.add(balance.eventDate.getMonth()));
@@ -30,26 +31,35 @@ router.get('/balance', async (request, response) => {
 
   months.forEach((month: any, monthIndex: any) => {
     balances.forEach((balance) => {
-      if (balance.eventDate.getMonth() === month) {
-        if (balanceList[monthIndex]) {
-          balanceList[monthIndex]?.data.push({
-            balanceDay: balance.eventDate,
-          });
-        } else {
-          balanceList.push({
-            balanceMonth: balance.eventDate,
-            data: [
-              {
-                balanceDay: balance.eventDate,
-              },
-            ],
-          });
-        }
+      const category = categories.find((categoryItem) => categoryItem.id === balance.categoryId);
+      const balanceData = {
+        name: category.name,
+        description: balance.description,
+        amount: balance.amount,
+        balanceId: balance.id,
+        balanceType: category.balanceType,
+        balanceDay: balance.eventDate,
+      };
+
+      if (balance.eventDate.getMonth() !== month) return;
+
+      if (balanceList[monthIndex]) {
+        balanceList[monthIndex]?.data.push(balanceData);
+        return;
       }
+
+      balanceList.push({
+        balanceMonth: balance.eventDate,
+        data: [balanceData],
+      });
     });
   });
 
-  return response.status(200).send(balanceList);
+  const balanceListOrdered = balanceList.sort(
+    (a, b) => new Date(a.balanceMonth).getMonth() - new Date(b.balanceMonth).getMonth(),
+  );
+
+  return response.status(200).send(balanceListOrdered);
 });
 
 export default router;
