@@ -16,7 +16,7 @@ class Balance {
   static async create(request: requestType, response: Response<ResponseBody>): Promise<void> {
     try {
       const { amount, eventDate, categoryId, description } = request.body;
-      const { authorization } = request.headers;
+      const authorization = request.headers.authorization.split(' ')[1];
 
       if (!amount && !categoryId) {
         response

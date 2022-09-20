@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 export default async (req: Request<any, any, DeleteCategoryRespose>, res: Response) => {
   const { id } = req.params;
-  const { authorization } = req.headers;
+  const authorization = req.headers.authorization.split(' ')[1];
 
   if (!authorization) return res.status(401).send({ message: 'unauthorized' });
   if (!id) return res.status(400).send({ message: 'please, provide a valid id on url param.' });

@@ -62,7 +62,7 @@ router.post(
             message: 'user logged in',
             status: 'success',
             data: {
-              token: `Bearer ${token}`,
+              token,
             },
           });
 

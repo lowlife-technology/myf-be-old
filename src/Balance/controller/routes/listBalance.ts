@@ -4,7 +4,7 @@ import { prisma } from '../../../../prisma';
 const router = express.Router();
 
 router.get('/balance', async (request, response) => {
-  const bearerToken = request.headers.authorization;
+  const bearerToken = request.headers.authorization.split(' ')[1];
 
   if (!bearerToken) return response.status(401).send();
 
@@ -22,7 +22,8 @@ router.get('/balance', async (request, response) => {
 
   if (!userData.id) return response.status(401).send();
 
-  const { balances, categories } = userData;
+  const { categories } = userData;
+  const balances = userData.balances.filter(({ deletedAt }) => !deletedAt);
 
   const monthsSet: any = new Set([]);
   balances.forEach((balance) => monthsSet.add(balance.eventDate.getMonth()));

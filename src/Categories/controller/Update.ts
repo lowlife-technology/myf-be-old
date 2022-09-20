@@ -20,8 +20,10 @@ export default async (req: UpdateCategoryRequest, res: Response) => {
   const {
     params: { id },
     body: { name, projectedAmount, description, balanceType },
-    headers: { authorization },
+    headers,
   } = req;
+
+  const authorization = headers.authorization.split(' ')[1];
 
   if (!authorization) return res.status(401).send({ message: 'unauthorized' });
 
