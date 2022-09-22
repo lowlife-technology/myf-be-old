@@ -1,10 +1,12 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { prisma } from '../../../../prisma';
 
-const router = express.Router();
-
-router.get('/balance', async (request, response) => {
-  const bearerToken = request.headers.authorization.split(' ')[1];
+export const listBalance = async (
+  request: Request<any, any, any, { search: any }>,
+  response: Response,
+) => {
+  const bearerToken = request.headers.authorization?.split(' ')[1];
+  const { search } = request.query;
 
   if (!bearerToken) return response.status(401).send();
 
@@ -25,14 +27,34 @@ router.get('/balance', async (request, response) => {
   const { categories } = userData;
   const balances = userData.balances.filter(({ deletedAt }) => !deletedAt);
 
+  const balanceWithCategoryData = balances.map((balance) => ({
+    balance,
+    category: categories.find((category) => category.id === balance.categoryId),
+  }));
+
+  const categoryNameFilter = balanceWithCategoryData.filter(({ category }) =>
+    category.name.toLocaleLowerCase().includes(search?.toLocaleLowerCase()),
+  );
+
+  const filterByCategoryName = categoryNameFilter.length
+    ? categoryNameFilter
+    : balanceWithCategoryData;
+
+  const filterByBalanceDescription = filterByCategoryName.filter(({ balance }) =>
+    balance.description?.toLocaleLowerCase().includes(search?.toLowerCase()),
+  );
+
+  const filteredBalanceWithCategory = filterByBalanceDescription.length
+    ? filterByBalanceDescription
+    : filterByCategoryName;
+
   const monthsSet: any = new Set([]);
-  balances.forEach((balance) => monthsSet.add(balance.eventDate.getMonth()));
+  filteredBalanceWithCategory.forEach(({ balance }) => monthsSet.add(balance.eventDate.getMonth()));
   const balanceList: any[] = [];
   const months = [...monthsSet];
 
   months.forEach((month: any, monthIndex: any) => {
-    balances.forEach((balance) => {
-      const category = categories.find((categoryItem) => categoryItem.id === balance.categoryId);
+    filteredBalanceWithCategory.forEach(({ balance, category }) => {
       const balanceData = {
         name: category.name,
         description: balance.description,
@@ -61,6 +83,4 @@ router.get('/balance', async (request, response) => {
   );
 
   return response.status(200).send(balanceListOrdered);
-});
-
-export default router;
+};

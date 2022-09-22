@@ -19,7 +19,7 @@ router.post(
     if (!email) {
       res.status(400).send({
         message: 'No email provided',
-        status: 'error'
+        status: 'error',
       });
 
       return;
@@ -33,28 +33,28 @@ router.post(
 
       const foundUser = await prisma.identity.findUnique({
         where: {
-          email
+          email,
         },
         select: {
           token: {
             select: {
-              status: true
-            }
-          }
-        }
+              status: true,
+            },
+          },
+        },
       });
 
       if (foundUser?.token?.status === 'active') {
         res.status(400).send({
           message: 'Token is already verified',
-          status: 'error'
+          status: 'error',
         });
       }
 
       if (!foundUser) {
         res.status(400).send({
           message: 'Wrong email provided.',
-          status: 'error'
+          status: 'error',
         });
 
         return;
@@ -66,24 +66,24 @@ router.post(
           token: {
             update: {
               expireAt,
-              token
-            }
-          }
-        }
+              token,
+            },
+          },
+        },
       });
 
       // TODO: add type to sendEmailResponse
       const sendEmailResponse = (await sendingEmail(
         req.body.email,
         `Your token is ${token}`,
-        'Is that yours ?'
+        'Is that yours ?',
       )) as any;
 
       if (sendEmailResponse?.code) {
         // TODO: treat error message
         res.status(400).send({
           message: sendEmailResponse.message,
-          status: 'error'
+          status: 'error',
         });
 
         return;
@@ -91,14 +91,14 @@ router.post(
 
       res.status(200).send();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       res.status(500).send({
         message: 'internal error',
-        status: 'error'
+        status: 'error',
       });
     }
-  }
+  },
 );
 
 export default router;

@@ -32,7 +32,7 @@ export const UpdateBalance = async (request: Request, response: Response) => {
     });
     return response.status(200).send();
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return response.status(500).send(error);
   }
 };

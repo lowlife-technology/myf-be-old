@@ -8,7 +8,6 @@ import categoryController from './src/Categories/controller';
 import sendEmailToken from './src/Identity/controller/sendEmailToken';
 import verifyEmail from './src/Identity/controller/verifyEmail';
 import { balanceRouter } from './src/Balance';
-import balanceListRouter from './src/Balance/controller/routes/listBalance';
 import balance from './src/Balance/controller';
 
 // TODO: create a file to load and check if credentials are loaded correctly.
@@ -31,7 +30,6 @@ app.use(sendEmailToken);
 app.use(verifyEmail);
 app.use(balance);
 app.use(balanceRouter);
-app.use(balanceListRouter);
 
 app.get('/', (_, res) => {
   res.status(200).send({
