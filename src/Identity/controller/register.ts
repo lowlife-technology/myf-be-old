@@ -108,7 +108,7 @@ router.post(
 
         res.status(400).send({ message: 'User allready existe' });
       } catch (error) {
-        console.log(error);
+        // console.log(error);
 
         res.status(500).send({
           message: 'internal error',

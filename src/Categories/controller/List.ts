@@ -7,7 +7,7 @@ interface ListCategoryParams {
 
 export default async (req: Request<any, any, any, ListCategoryParams>, res: Response) => {
   const { balanceType } = req.query;
-  const { authorization } = req.headers;
+  const authorization = req.headers.authorization.split(' ')[1];
 
   if (!authorization) {
     return res.status(401).send({

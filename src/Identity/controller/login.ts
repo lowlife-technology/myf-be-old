@@ -56,13 +56,13 @@ router.post(
             include: { identity: true },
           });
 
-          console.log(tokenCreated);
+          // console.log(tokenCreated);
 
           res.status(201).send({
             message: 'user logged in',
             status: 'success',
             data: {
-              token: `Bearer ${token}`,
+              token,
             },
           });
 
@@ -75,7 +75,7 @@ router.post(
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       res.status(500).send({
         message: 'internal error',
         status: 'error',

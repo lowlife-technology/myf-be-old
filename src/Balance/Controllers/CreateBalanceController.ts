@@ -16,14 +16,14 @@ export class CreateBalanceController implements ICreateBalanceController {
   async handle(request: IPostRequest<ICreateBalanceDTO>, response: IResponse): Promise<IResponse> {
     try {
       const { amount, eventDate, categoryId, description } = request.body;
-      const { authorization } = request.headers;
+      const authorization = request.headers.authorization.split(' ')[1];
 
       if (!amount || !categoryId)
         return response
           .status(400)
           .send({ message: 'Invalid body. Fields amount and categoryId are required.' });
 
-      if (!authorization) return response.status(400).send({ message: 'Unauthorized' });
+      if (!authorization) return response.status(401).send();
 
       if (typeof amount !== 'number')
         return response.status(400).send({ message: 'amount must be type of number' });

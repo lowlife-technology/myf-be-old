@@ -11,28 +11,28 @@ router.patch('/identity/verifyEmail', async (req, res) => {
   if (Number.isNaN(token) || token === 0) {
     res.status(400).send({
       message: 'Token is required',
-      status: 'error'
+      status: 'error',
     });
   }
 
   try {
     const findToken = await prisma.token.findUnique({
       where: {
-        token
-      }
+        token,
+      },
     });
 
     if (findToken?.status === 'active') {
       res.status(400).send({
         message: 'Token is already verified',
-        status: 'error'
+        status: 'error',
       });
     }
 
     if (findToken?.token !== token) {
       res.status(400).send({
         message: 'Invalid token',
-        status: 'error'
+        status: 'error',
       });
       return;
     }
@@ -41,30 +41,30 @@ router.patch('/identity/verifyEmail', async (req, res) => {
     const now = new Date();
     const currentTime = now.getTime();
 
-    console.log(endTime, currentTime);
+    // console.log(endTime, currentTime);
 
     if (currentTime > endTime) {
       res.status(400).send({
         mesasge: 'Token has expired',
-        status: 'error'
+        status: 'error',
       });
       return;
     }
 
     await prisma.token.update({
       where: {
-        token
+        token,
       },
       data: {
-        status: 'active'
-      }
+        status: 'active',
+      },
     });
 
     res.status(200).send();
   } catch (error) {
     res.status(500).send({
       message: 'internal error',
-      status: 'error'
+      status: 'error',
     });
   }
 });

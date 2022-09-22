@@ -7,7 +7,7 @@ interface getCategoryByIdParams {
 
 export default async (req: Request<getCategoryByIdParams>, res: Response) => {
   const { id } = req.params;
-  const { authorization } = req.headers;
+  const authorization = req.headers.authorization.split(' ')[1];
 
   if (!authorization) {
     return res.status(401).send({
