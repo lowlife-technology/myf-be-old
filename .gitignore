@@ -1,4 +1,3 @@
 /node_modules
-mygithubaccesstoken.dk
 .env
-/build
+/dist

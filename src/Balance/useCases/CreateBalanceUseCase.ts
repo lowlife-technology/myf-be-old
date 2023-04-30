@@ -10,7 +10,7 @@ export interface ICreateBalanceUseCase {
 export class CreateBalanceUseCase implements ICreateBalanceUseCase {
   constructor(
     private balanceRepository: IBalanceRepository,
-    private readIdentityUseCase: IReadIdentityUseCase
+    private readIdentityUseCase: IReadIdentityUseCase,
   ) {
     this.balanceRepository = balanceRepository;
   }
@@ -20,7 +20,7 @@ export class CreateBalanceUseCase implements ICreateBalanceUseCase {
 
     const createdBalance = this.balanceRepository.createBalance({
       ...balance,
-      userId: id
+      userId: id!,
     });
 
     return createdBalance;

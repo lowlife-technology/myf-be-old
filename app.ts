@@ -1,7 +1,6 @@
 import express from 'express';
 
 import cors from 'cors';
-import AWS from 'aws-sdk';
 import loginRouter from './src/Identity/controller/login';
 import registerRouter from './src/Identity/controller/register';
 import categoryController from './src/Categories/controller';
@@ -9,15 +8,6 @@ import sendEmailToken from './src/Identity/controller/sendEmailToken';
 import verifyEmail from './src/Identity/controller/verifyEmail';
 import { balanceRouter } from './src/Balance';
 // import balance from './src/Balance/controller';
-
-// TODO: create a file to load and check if credentials are loaded correctly.
-AWS.config.getCredentials((err, credentials) => {
-  if (err) {
-    console.log({ err });
-  } else {
-    console.log({ credentials });
-  }
-});
 
 const app = express();
 app.use(express.json());
@@ -40,5 +30,5 @@ app.get('/', (_, res) => {
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.info(`Server is running on port ${port}`);
 });

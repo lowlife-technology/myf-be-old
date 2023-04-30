@@ -11,7 +11,11 @@ export class IdentityEntity {
       this.id = uuidv4();
     }
 
-    Object.assign(this, props);
+    // Object.assign(this, props);
+    this.email = props.email;
+
+    this.fullName = props.fullName;
+    this.password = props.password;
 
     if (!this.email) throw new Error('email is required.');
     if (!this.fullName) throw new Error('full name is required');

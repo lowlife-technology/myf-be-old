@@ -14,9 +14,9 @@ export class IdentityRepository implements IIdentityRepository {
     return this.database.identity.findFirst({
       where: {
         bearer: {
-          token: jwt
-        }
-      }
+          token: jwt,
+        },
+      },
     });
   }
 }
