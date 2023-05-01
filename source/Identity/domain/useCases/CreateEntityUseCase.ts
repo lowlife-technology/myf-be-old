@@ -18,21 +18,23 @@ export class CreateIdentityUseCase implements ICreateIdentityUseCase {
     email,
     phone,
   }: ICreateIdentityDTO): Promise<ICreateIdentityUseCaseResponse> {
+    // DEBT: hash secret
+
     await this.identityRepository.createIdentity({ secret, email, phone });
 
     if (email) {
-      // generate token
-      // save token on DB
-      // send email
+      // DEBT: generate token
+      // DEBT: save token on DB
+      // DEBT: send email
       return {
         message: 'email sent to user.',
         response: { token: 123456 },
       };
     }
 
-    // generate token
-    // save token on DB
-    // send sms
+    // DEBT: generate token
+    // DEBT: save token on DB
+    // DEBT: send sms
     return {
       message: 'sms sent to user.',
       response: { token: 123456 },

@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Identity {
-  id           String     @id @default(uuid())
-  email        String     @unique
-  fullName     String    
-  password     String     @unique
-  token        Token?   
+  id           String     @id
+  email        String?    @unique
+  phone        String?    @unique
+  secret       String
+  token        Token?
   balances     Balance[]
   bearer       Bearer?
   categories   Category[]
@@ -30,8 +30,8 @@ model Token {
 model Category {
   id                String    @id @default(uuid())
   identity          Identity  @relation(fields: [userId], references: [id]) // doesn't exist!
-  userId            String    
-  name              String    
+  userId            String
+  name              String
   projectedAmount   Decimal   @default(0)
   description       String?
   autoInsert        Boolean   @default(false)
@@ -48,9 +48,9 @@ model Balance {
   description     String?
   eventDate       DateTime?
   identity        Identity  @relation(fields: [userId], references: [id]) // doesn't exist!
-  userId          String    
+  userId          String
   category        Category  @relation(fields: [categoryId], references: [id])
-  categoryId      String    
+  categoryId      String
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @default(now())
   deletedAt       DateTime?

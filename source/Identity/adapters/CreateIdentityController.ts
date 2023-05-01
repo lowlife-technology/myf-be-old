@@ -5,7 +5,10 @@ import { ICreateIdentityDTO } from '../domain/DTOs/CreateIdentityDTO';
 export class CreateIdentityController {
   constructor(private createIdentityUseCase: ICreateIdentityUseCase) {}
 
-  async handle(request: Request<unknown, unknown, ICreateIdentityDTO>, response: Response) {
+  async handle(
+    request: Request<unknown, unknown, ICreateIdentityDTO>,
+    response: Response,
+  ): Promise<Response> {
     const { secret, email, phone } = request.body;
     try {
       if (!secret && (!email || !phone)) {
