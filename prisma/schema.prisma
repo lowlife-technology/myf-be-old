@@ -19,18 +19,18 @@ model Identity {
 }
 
 model Token {
-  id           Int      @id @default(autoincrement())
+  id           String   @id
   token        Int      @unique
   status       String   @default("inactive")
-  expireAt     DateTime @default(now())
-  identity     Identity @relation(fields: [userId], references: [id]) // doesn't exist!
-  userId       String   @unique
+  expireAt     String
+  identity     Identity? @relation(fields: [identityId], references: [id]) // doesn't exist!
+  identityId   String?   @unique
 }
 
 model Category {
   id                String    @id @default(uuid())
-  identity          Identity  @relation(fields: [userId], references: [id]) // doesn't exist!
-  userId            String
+  identity          Identity  @relation(fields: [identityID], references: [id]) // doesn't exist!
+  identityID        String
   name              String
   projectedAmount   Decimal   @default(0)
   description       String?
@@ -47,8 +47,8 @@ model Balance {
   amount          Int
   description     String?
   eventDate       DateTime?
-  identity        Identity  @relation(fields: [userId], references: [id]) // doesn't exist!
-  userId          String
+  identity        Identity  @relation(fields: [identityId], references: [id]) // doesn't exist!
+  identityId      String
   category        Category  @relation(fields: [categoryId], references: [id])
   categoryId      String
   createdAt       DateTime  @default(now())
@@ -59,8 +59,8 @@ model Balance {
 model Bearer {
   id            Int       @id @default(autoincrement())
   token         String
-  identity      Identity  @relation(fields: [userId], references: [id])
-  userId        String    @unique
+  identity      Identity  @relation(fields: [identityId], references: [id])
+  identityId    String    @unique
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now())
   deletedAt     DateTime?

@@ -19,13 +19,9 @@ export class VerifyCredentialsController {
         });
       }
 
-      const identityExist = await this.verifyCredentialsUseCase.execute({
-        credential,
-      });
-
       return response.status(200).json({
         message: 'Credentials verified successfully.',
-        response: { unique: !identityExist },
+        response: await this.verifyCredentialsUseCase.execute({ credential }),
       });
     } catch (error) {
       const { message } = error as Error;

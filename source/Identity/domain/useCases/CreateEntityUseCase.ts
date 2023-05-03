@@ -23,9 +23,8 @@ export class CreateIdentityUseCase implements ICreateIdentityUseCase {
     await this.identityRepository.createIdentity({ secret, email, phone });
 
     if (email) {
-      // DEBT: generate token
-      // DEBT: save token on DB
       // DEBT: send email
+
       return {
         message: 'email sent to user.',
         response: { token: 123456 },

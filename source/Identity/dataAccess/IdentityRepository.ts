@@ -2,8 +2,8 @@ import { prisma } from '../../../prisma';
 import { IIdentity, Identity } from '../domain/Entities/Identity';
 
 export interface IIdentityRepository {
-  createIdentity(data: IIdentity): Promise<IIdentity | unknown>;
-  findIdentity(credential: string): Promise<IIdentity | null>;
+  createIdentity(data: IIdentity): Promise<Identity | unknown>;
+  findIdentity(credential: string): Promise<Identity | null>;
 }
 
 export const IdentityRepository = class {

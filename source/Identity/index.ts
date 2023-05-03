@@ -5,13 +5,17 @@ import { CreateIdentityController } from './adapters/CreateIdentityController';
 import { VerifyCredentialsUseCase } from './domain/useCases/VerifyCredentialsUseCase';
 import { VerifyCredentialsController } from './adapters/VerifyCredentialsController';
 import { IVerifyCredentialsDTO } from './domain/DTOs/VerifyCredentialsDTO';
+import { CredentialsTokenRepository } from './dataAccess/CredentialsTokenRepository';
 
 const identityRouter = Router();
 
 const createIdentityUseCase = new CreateIdentityUseCase(IdentityRepository);
 const createIdentityController = new CreateIdentityController(createIdentityUseCase);
 
-const verifyCredentialsUseCase = new VerifyCredentialsUseCase(IdentityRepository);
+const verifyCredentialsUseCase = new VerifyCredentialsUseCase(
+  IdentityRepository,
+  CredentialsTokenRepository,
+);
 const verifyCredentialsController = new VerifyCredentialsController(verifyCredentialsUseCase);
 
 identityRouter.post('/identity', (req, res) => createIdentityController.handle(req, res));
