@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { IVerifyCredentialsDTO } from '../domain/DTOs/VerifyCredentialsDTO';
-import { IVerifyCredentialsUseCase } from '../domain/useCases/VerifyCredentialsUseCase';
+import { IGenerateCredentialsTokenDTO } from '../../domain/DTOs/CredentialsTokenDTOs/GenerateCredentialsTokenDTO';
+import { IGenerateCredentialsUseCase } from '../../domain/useCases/CredentialsToken/GenerateCredentialsUseCase';
 
-export class VerifyCredentialsController {
-  constructor(private verifyCredentialsUseCase: IVerifyCredentialsUseCase) {}
+export class GenerateCredentialsController {
+  constructor(private generateCredentialsUseCase: IGenerateCredentialsUseCase) {}
 
   async handle(
-    request: Request<unknown, unknown, unknown, IVerifyCredentialsDTO>,
+    request: Request<unknown, unknown, unknown, IGenerateCredentialsTokenDTO>,
     response: Response,
   ): Promise<Response> {
     try {
@@ -19,10 +19,9 @@ export class VerifyCredentialsController {
         });
       }
 
-      return response.status(200).json({
-        message: 'Credentials verified successfully.',
-        response: await this.verifyCredentialsUseCase.execute({ credential }),
-      });
+      return response
+        .status(200)
+        .json(await this.generateCredentialsUseCase.execute({ credential }));
     } catch (error) {
       const { message } = error as Error;
 

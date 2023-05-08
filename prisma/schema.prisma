@@ -14,7 +14,7 @@ model Identity {
   secret       String
   token        Token?
   balances     Balance[]
-  bearer       Bearer?
+  jwt          Jwt[]
   categories   Category[]
 }
 
@@ -23,6 +23,7 @@ model Token {
   token        Int      @unique
   status       String   @default("inactive")
   expireAt     String
+  credential   String
   identity     Identity? @relation(fields: [identityId], references: [id]) // doesn't exist!
   identityId   String?   @unique
 }
@@ -56,12 +57,12 @@ model Balance {
   deletedAt       DateTime?
 }
 
-model Bearer {
+model Jwt {
   id            Int       @id @default(autoincrement())
-  token         String
+  jwt           String
   identity      Identity  @relation(fields: [identityId], references: [id])
-  identityId    String    @unique
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now())
-  deletedAt     DateTime?
+  identityId    String
+  createdAt     String
+  updatedAt     String
+  deletedAt     String?
 }

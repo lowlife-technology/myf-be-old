@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
-import { ICreateIdentityUseCase } from '../domain/useCases/CreateIdentityUseCase';
-import { ICreateIdentityDTO } from '../domain/DTOs/IdentityDTOs/CreateIdentityDTO';
+import { ILoginDTO } from '../domain/DTOs/IdentityDTOs/LoginDTO';
+import { ILoginUseCase } from '../domain/useCases/LoginUseCase';
 
-export class CreateIdentityController {
-  constructor(private createIdentityUseCase: ICreateIdentityUseCase) {}
+export class LoginController {
+  constructor(private loginUseCase: ILoginUseCase) {}
 
   async handle(
-    request: Request<unknown, unknown, ICreateIdentityDTO>,
+    request: Request<unknown, unknown, ILoginDTO>,
     response: Response,
   ): Promise<Response> {
-    const { secret, email, phone } = request.body;
     try {
+      const { secret, email, phone } = request.body;
+
       if (!secret && (!email || !phone)) {
         return response.status(400).send({
           message: 'secret is required and email or phone are required.',
@@ -39,9 +40,9 @@ export class CreateIdentityController {
         });
       }
 
-      const identityUseCase = await this.createIdentityUseCase.execute({ secret, email, phone });
+      const loginUseCase = await this.loginUseCase.execute({ secret, email, phone });
 
-      return response.status(201).send(identityUseCase);
+      return response.status(201).send(loginUseCase);
     } catch (error) {
       const { message } = error as Error;
 
