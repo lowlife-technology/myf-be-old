@@ -16,6 +16,7 @@ model Identity {
   balances     Balance[]
   jwt          Jwt[]
   categories   Category[]
+  myfKey       MyfKey[]
 }
 
 model Token {
@@ -60,9 +61,19 @@ model Balance {
 model Jwt {
   id            Int       @id @default(autoincrement())
   jwt           String
-  identity      Identity  @relation(fields: [identityId], references: [id])
-  identityId    String
+  identity      Identity?  @relation(fields: [identityId], references: [id])
+  identityId    String?
+  myfKey        MyfKey?    @relation(fields: [myfKeyId], references: [myfKeyId])
+  myfKeyId      String?
   createdAt     String
   updatedAt     String
   deletedAt     String?
+}
+
+model MyfKey {
+  myfKeyId      String    @id
+  myfKey        String?
+  identity      Identity? @relation(fields: [identityId], references: [id])
+  identityId    String?
+  jwt           Jwt[]
 }
