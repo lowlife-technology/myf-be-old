@@ -48,7 +48,7 @@ export class CreateIdentityUseCase implements ICreateIdentityUseCase {
         phone,
       });
 
-      const jwt = this.JWTProvider.createAccessToken(newIdentity.id);
+      const jwt = this.JWTProvider.createAccessToken({ id: newIdentity.id });
 
       await this.jwtRepository.createJWT({ identityId: newIdentity.id, jwt });
 
@@ -63,7 +63,7 @@ export class CreateIdentityUseCase implements ICreateIdentityUseCase {
       };
     }
 
-    const jwt = this.JWTProvider.createAccessToken(identityFound.id);
+    const jwt = this.JWTProvider.createAccessToken({ id: identityFound.id });
 
     return {
       message: 'Identity exists. You can allow it to be logged in.',

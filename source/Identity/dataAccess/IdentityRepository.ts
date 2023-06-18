@@ -6,7 +6,7 @@ export interface IIdentityRepository {
   findIdentity(credential: string): Promise<Identity | null>;
 }
 
-export const IdentityRepository = class {
+export const IdentityRepository: IIdentityRepository = class {
   static async createIdentity(data: IIdentity): Promise<Identity> {
     return prisma.identity.create({ data: new Identity(data) });
   }

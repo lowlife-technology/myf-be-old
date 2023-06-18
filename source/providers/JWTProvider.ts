@@ -1,7 +1,7 @@
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 
 export interface IJWTProvider {
-  createAccessToken(identityId: string): string;
+  createAccessToken({ id }: { id: string }): string;
   verifyAccessToken(token: string): string | JwtPayload;
 }
 
@@ -12,8 +12,8 @@ export class JWTProvider implements IJWTProvider {
     this.secretKey = process.env.ACCESS_TOKEN_SECRET!;
   }
 
-  createAccessToken(identityId: string) {
-    return sign({ identityId }, this.secretKey);
+  createAccessToken({ id }: { id: string }) {
+    return sign({ id }, this.secretKey);
   }
 
   verifyAccessToken(token: string) {

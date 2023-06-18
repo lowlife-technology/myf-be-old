@@ -29,7 +29,7 @@ export class LoginUseCase implements ILoginUseCase {
 
     if (!secretMatchs) throw new Error('Identity not found.');
 
-    const jwt = this.JWTProvider.createAccessToken(identityFound.id);
+    const jwt = this.JWTProvider.createAccessToken({ id: identityFound.id });
     await this.jwtRepository.createJWT({ identityId: identityFound.id, jwt });
 
     return {

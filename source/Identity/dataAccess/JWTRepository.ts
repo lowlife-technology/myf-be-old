@@ -2,7 +2,8 @@ import { JWT } from '../domain/Entities/JWT';
 import { prisma } from '../../../prisma';
 
 export interface ICreateJWTPayload {
-  identityId: string;
+  identityId?: string;
+  myfKeyId?: string;
   jwt: string;
 }
 
