@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "Low Life Techonology",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "dist/source/app.js",
   "scripts": {
     "dev": "ts-node-dev --poll --respawn --exit-child --no-notify --ignore-watch node_modules -r tsconfig-paths/register ./source/app.ts",
     "start": "env-cmd -f .env nodemon ./source/app.ts",
